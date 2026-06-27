@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="assets/Logo F.ico">
+<title>Valise | O Gerenciador de Viagens Definitivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    :root {
+        --green-deep: #1a3a28;
+        --green-mid: #2d5a3d;
+        --gold: #c9973a;
+        --gold-light: #e8c06a;
+        --cream: #faf8f3;
+        --white: #ffffff;
+        --shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    html { margin: 0; padding: 0; overflow-x: hidden; scroll-behavior: smooth; }
+    body { margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--green-deep); -webkit-overflow-scrolling: touch; position: relative; }
+
+    /* Navbar Premium */
+    nav {
+        padding: 5px 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.95);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    }
+    .brand { display: flex; align-items: center; padding: 5px 0; }
+    .logo-img { height: 75px; width: auto; object-fit: contain; transition: transform 0.3s ease; }
+    .logo-img:hover { transform: translateY(-2px); }
+    
+    /* Grupo de botões no topo */
+    .nav-actions { display: flex; align-items: center; gap: 15px; }
+
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(rgba(26, 58, 40, 0.8), rgba(26, 58, 40, 0.8)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+        background-size: cover; background-position: center;
+        min-height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; color: var(--white); padding: 40px 20px;
+    }
+
+    .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; margin-bottom: 20px; line-height: 1.1; max-width: 850px; }
+    .hero h1 em { color: var(--gold-light); font-style: italic; }
+    .hero p { font-size: 1.2rem; max-width: 600px; margin-bottom: 40px; opacity: 0.95; font-weight: 300; line-height: 1.6; }
+
+    .btn-gold {
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--green-deep); border: none; border-radius: 50px;
+        padding: 20px 45px; font-weight: 700; font-size: 0.95rem;
+        cursor: pointer; text-decoration: none; transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(201,151,58,0.3);
+        text-transform: uppercase; letter-spacing: 1.5px;
+        display: inline-block;
+    }
+    .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(201,151,58,0.5); filter: brightness(1.05); }
+
+    /* Novas Secções Estilizadas */
+    .features-section { padding: 100px 5%; background: var(--white); text-align: center; }
+    
+    /* Grid atualizada para acomodar os 6 elementos com harmonia */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+    
+    .feature-card { 
+        background: var(--cream); padding: 40px 30px; border-radius: 20px; 
+        box-shadow: var(--shadow); transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        text-align: left; border-top: 5px solid var(--green-mid);
+    }
+    .feature-card:hover { transform: translateY(-8px); box-shadow: 0 15px 45px rgba(0,0,0,0.15); }
+    .feature-card.alt-border { border-top-color: var(--gold); }
+    
+    .icon-box { background: var(--green-deep); color: var(--gold); width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 25px; }
+    .feature-card h3 { font-size: 1.4rem; color: var(--green-deep); margin-bottom: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif; }
+    .feature-card p { color: #555; line-height: 1.6; font-size: 0.95rem; margin: 0; }
+
+    /* Login Modal Adaptado para Firebase Auth */
+    #login-overlay {
+        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(26, 58, 40, 0.97);
+        z-index: 1000; align-items: center; justify-content: center; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    }
+    .login-box {
+        background: var(--white); padding: 50px 40px; border-radius: 32px;
+        width: 90%; max-width: 400px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+    .login-logo { width: 140px; height: auto; margin-bottom: 10px; }
+    .login-box input {
+        width: 100%; padding: 18px; margin: 10px 0;
+        border: 1px solid #eee; border-radius: 14px; box-sizing: border-box;
+        background: #f9f9f9; font-size: 1rem; transition: 0.3s;
+    }
+    .login-box input:focus { border-color: var(--gold); outline: none; background: #fff; }
+    .btn-access {
+        width: 100%; background: var(--green-deep); color: var(--gold-light);
+        padding: 18px; border: none; border-radius: 14px; font-weight: bold; 
+        cursor: pointer; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+    }
+    .btn-access:hover { background: #0e2016; letter-spacing: 2px; }
+
+    /* App Frame */
+    #app-container { 
+        display: none; 
+        position: fixed; 
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 2000; 
+        background: white; 
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    #app-frame { 
+        width: 100%; 
+        height: 100%; 
+        border: none; 
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        /* Navbar / Hero */
+        .hero { min-height: 60vh; padding: 20px; }
+        .hero h1 { font-size: 2rem !important; }
+        .hero p { font-size: 1rem; margin-bottom: 25px; }
+        .logo-img { height: 60px; }
+        .nav-actions { gap: 8px; }
+
+        /* Features em lista vertical (mais fácil de ler) */
+        .features-grid { 
+            grid-template-columns: 1fr !important; 
+            gap: 15px !important; 
+        }
+        .feature-card { padding: 25px !important; }
+
+        /* Simplificação da seção Plataformas */
+        #plataformas { padding: 40px 5% !important; }
+        #plataformas > div > div { grid-template-columns: 1fr !important; gap: 20px; }
+        #plataformas > div > div:last-child { grid-template-columns: 1fr !important; }
+
+        /* Esconde textos longos no mobile para manter a página rápida */
+        .hide-mobile { display: none !important; }
+    }
+
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="brand">
+        <img src="assets/Logo T01.png?v=new" alt="Valise" class="logo-img">
+    </div>
+    <div class="nav-actions">
+        <a href="https://wa.me/5516992629626" target="_blank" style="background:#25D366; border:none; color:#ffffff; padding:8px 20px; border-radius:30px; cursor:pointer; font-weight:700; font-size:0.8rem; letter-spacing:1px; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fab fa-whatsapp" style="font-size: 1rem;"></i> WHATSAPP
+        </a>
+        <a href="https://pay.hotmart.com/C106401358W" target="_blank" style="background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); color: var(--green-deep); border: none; border-radius: 50px; padding: 8px 22px; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(201,151,58,0.3);">
+            <i class="fas fa-shopping-cart" style="font-size: 0.85rem;"></i> ADQUIRIR
+        </a>
+        <button onclick="showLogin()" style="background:transparent; border:1.5px solid var(--green-deep); color:var(--green-deep); padding:8px 25px; border-radius:30px; cursor:pointer; font-weight:700; font-size:0.8rem; letter-spacing:1px; transition: 0.3s;">
+            ACESSAR
+        </button>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Viaje com a <em>Elegância</em> e a segurança de quem não deixa nada ao acaso.</h1>
+    <p>O Valise não é um buscador de passagens e nem um gerador automático de itinerários clichês. É o seu concierge digital e hub financeiro — onde você centraliza planos, controla cada centavo em múltiplas moedas e carrega tudo no bolso com elegância.</p>
+    <button class="btn-gold" onclick="showLogin()">Começar Minha Experiência →</button>
+</section>
+
+<section class="features-section" id="features">
+    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--green-deep); margin-bottom: 10px; margin-top: 0;">Conheça o Ecossistema Valise</h2>
+    <p style="font-size: 1.1rem; color: #555; max-width: 600px; margin: 0 auto 60px;">Explore as ferramentas e abas inteligentes desenvolvidas para a gestão impecável da sua viagem.</p>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="icon-box"><i class="fas fa-route"></i></div>
+            <h3>Timeline</h3>
+            <p>Visualize e organize toda a cronologia da sua viagem, mapeando o deslocamento entre cidades e controlando os dias de permanência de forma fluida.</p>
+        </div>
+        <div class="feature-card alt-border">
+            <div class="icon-box"><i class="fas fa-calendar-day"></i></div>
+            <h3>Card Diário</h3>
+            <p>Gerencie a programação detalhada de cada dia da jornada. Defina horários, transportes e passeios em um itinerário prático e visual.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box"><i class="fas fa-tasks"></i></div>
+            <h3>Checklist</h3>
+            <p>Garanta que nada seja esquecido. Um espaço inteligente para gerenciar tarefas pré-viagem, malas e documentos essenciais antes do embarque.</p>
+        </div>
+        <div class="feature-card alt-border">
+            <div class="icon-box"><i class="fas fa-wallet"></i></div>
+            <h3>Financeiro</h3>
+            <p>Cadastre e controle todas as despesas da sua viagem por categorias. Monitore gastos reais em comparação às suas estimativas de orçamento.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box"><i class="fas fa-exchange-alt"></i></div>
+            <h3>Fluxo de Caixa</h3>
+            <p>Acompanhe suas finanças com suporte a multimoedas (EUR, USD, GBP). Ajuste taxas de câmbio personalizadas e simule conversões instantâneas para BRL.</p>
+        </div>
+        <div class="feature-card alt-border">
+            <div class="icon-box"><i class="fas fa-info-circle"></i></div>
+            <h3>Como Usar</h3>
+            <p>Acesse tutoriais rápidos, dicas práticas de navegação e as melhores orientações para extrair o máximo do seu concierge digital de viagens.</p>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 100px 5%; background: var(--cream);" id="plataformas">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 70px;">
+            <div style="background: var(--gold); color: var(--green-deep); padding: 6px 20px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; display: inline-block; margin-bottom: 20px;">Ecossistema Completo</div>
+            <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--green-deep); margin: 0 0 15px; line-height: 1.2;">Uma ferramenta, <em style="color: var(--green-mid); font-style: italic;">dois mundos</em></h2>
+            <p style="font-size: 1.1rem; color: #555; max-width: 580px; margin: 0 auto; line-height: 1.6;">O Valise foi desenhado para cada momento da sua viagem — do planejamento minucioso no desktop ao acesso ágil na palma da mão.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+
+            <!-- Desktop Card -->
+            <div style="background: var(--green-deep); border-radius: 28px; padding: 50px 45px; color: var(--cream); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: rgba(201,151,58,0.06); border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: -60px; left: -30px; width: 200px; height: 200px; background: rgba(201,151,58,0.04); border-radius: 50%;"></div>
+                
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+                    <div style="background: rgba(201,151,58,0.15); border: 1px solid var(--gold); color: var(--gold); width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-light); opacity: 0.8; margin-bottom: 2px;">Notebooks & Tablets</div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin: 0; color: var(--white);">Plataforma Desktop</h3>
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; color: rgba(250,248,243,0.65); margin: 0 0 40px; line-height: 1.5;">O Painel de Controle e Gestão Avançada. Onde você planeja cada detalhe com precisão e visão completa da sua jornada.</p>
+
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: var(--gold); color: var(--green-deep); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"><i class="fas fa-map-marked-alt"></i></div>
+                        <div>
+                            <h4 style="margin: 0 0 5px; font-size: 1rem; color: var(--white);">Hub de Centralização</h4>
+                            <p style="margin: 0; font-size: 0.88rem; color: rgba(250,248,243,0.6); line-height: 1.5;">Organize voos, hospedagens, aluguéis e seguros em uma linha do tempo clara e estruturada.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: var(--gold); color: var(--green-deep); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"><i class="fas fa-chart-pie"></i></div>
+                        <div>
+                            <h4 style="margin: 0 0 5px; font-size: 1rem; color: var(--white);">Gestão Financeira e Fluxo de Caixa</h4>
+                            <p style="margin: 0; font-size: 0.88rem; color: rgba(250,248,243,0.6); line-height: 1.5;">Lance despesas, categorize gastos, gerencie orçamentos e visualize gráficos analíticos de consumo.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: var(--gold); color: var(--green-deep); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"><i class="fas fa-bookmark"></i></div>
+                        <div>
+                            <h4 style="margin: 0 0 5px; font-size: 1rem; color: var(--white);">Painel de Links e Documentos</h4>
+                            <p style="margin: 0; font-size: 0.88rem; color: rgba(250,248,243,0.6); line-height: 1.5;">Fixe tudo de forma categorizada — alimentação, cupons, ingressos, mapas — para acesso rápido a qualquer momento.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: var(--gold); color: var(--green-deep); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"><i class="fas fa-globe"></i></div>
+                        <div>
+                            <h4 style="margin: 0 0 5px; font-size: 1rem; color: var(--white);">Suporte Multi-idioma e Multimoedas</h4>
+                            <p style="margin: 0; font-size: 0.88rem; color: rgba(250,248,243,0.6); line-height: 1.5;">Estrutura totalmente preparada para operação internacional, com conversão e moedas do mundo todo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Card -->
+            <div style="background: var(--white); border-radius: 28px; padding: 50px 45px; border: 2px solid #e8e2d5; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: rgba(45,90,61,0.04); border-radius: 50%;"></div>
+
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+                    <div style="background: var(--green-deep); color: var(--gold); width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--green-mid); opacity: 0.7; margin-bottom: 2px;">Smartphones</div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin: 0; color: var(--green-deep);">Versão Mobile</h3>
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; color: #666; margin: 0 0 40px; line-height: 1.5;">O Guia de Bolso Operacional. Otimizado para o dia do passeio — rápido, direto e sempre disponível na palma da mão.</p>
+
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: var(--green-deep); color: var(--gold); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"><i class="fas fa-bolt"></i></div>
+                        <div>
+                            <h4 style="margin: 0 0 5px; font-size: 1rem; color: var(--green-deep);">Acesso Rápido "On-the-Road"</h4>
+                            <p style="margin: 0; font-size: 0.88rem; color: #666; line-height: 1.5;">Visualize o itinerário do dia seguinte ou atual em segundos, sem planilhas. Feito para uso durante o passeio.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: var(--green-deep); color: var(--gold); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"><i class="fas fa-link"></i></div>
+                        <div>
+                            <h4 style="margin: 0 0 5px; font-size: 1rem; color: var(--green-deep);">Central de Links e Atalhos</h4>
+                            <p style="margin: 0; font-size: 0.88rem; color: #666; line-height: 1.5;">Com um clique, abra a rota no mapa, acesse o site do restaurante reservado ou copie o endereço do hotel para o app de transporte.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: var(--green-deep); color: var(--gold); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"><i class="fas fa-suitcase-rolling"></i></div>
+                        <div>
+                            <h4 style="margin: 0 0 5px; font-size: 1rem; color: var(--green-deep);">Checklist de Bagagem Digital</h4>
+                            <p style="margin: 0; font-size: 0.88rem; color: #666; line-height: 1.5;">Um gerenciador dinâmico de malas para garantir que você não esqueça nenhum item ao mudar de hotel ou retornar para casa.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section style="padding: 100px 5%; background: var(--cream); text-align: center;" id="adquirir">
+    <div style="max-width: 900px; margin: 0 auto;">
+
+        <!-- Cabeçalho da seção -->
+        <div style="background: var(--gold); color: var(--green-deep); padding: 6px 20px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; display: inline-block; margin-bottom: 25px;">
+            Garanta Agora
+        </div>
+        <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; color: var(--green-deep); margin-bottom: 15px; margin-top: 0; line-height: 1.2;">
+            Invista na sua <em style="color: var(--green-mid); font-style: italic;">melhor viagem</em>
+        </h2>
+        <p style="font-size: 1.1rem; color: #555; max-width: 600px; margin: 0 auto 60px; line-height: 1.6;">
+            Acesso completo ao ecossistema Valise — desktop e mobile — com todas as ferramentas para planejar, organizar e viver cada detalhe da sua jornada.
+        </p>
+
+        <!-- Card de compra -->
+        <div style="background: var(--green-deep); border-radius: 32px; padding: 60px 50px; box-shadow: 0 20px 60px rgba(26,58,40,0.2); border: 2px solid var(--gold); position: relative; overflow: hidden;">
+
+            <div style="position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: rgba(201,151,58,0.06); border-radius: 50%;"></div>
+            <div style="position: absolute; bottom: -80px; left: -40px; width: 240px; height: 240px; background: rgba(201,151,58,0.04); border-radius: 50%;"></div>
+
+            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: var(--cream); margin: 0 0 10px;">
+                Valise <em style="color: var(--gold-light);">Premium</em>
+            </h3>
+            <p style="font-size: 1rem; color: rgba(250,248,243,0.65); margin: 0 0 40px;">Acesso vitalício · Desktop + Mobile · Suporte via WhatsApp</p>
+
+            <!-- Benefícios -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 640px; margin: 0 auto 50px; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--cream); font-size: 0.95rem;">
+                    <i class="fas fa-check-circle" style="color: var(--gold); font-size: 1.1rem; flex-shrink: 0;"></i> Timeline de viagem
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--cream); font-size: 0.95rem;">
+                    <i class="fas fa-check-circle" style="color: var(--gold); font-size: 1.1rem; flex-shrink: 0;"></i> Card diário detalhado
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--cream); font-size: 0.95rem;">
+                    <i class="fas fa-check-circle" style="color: var(--gold); font-size: 1.1rem; flex-shrink: 0;"></i> Controle financeiro
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--cream); font-size: 0.95rem;">
+                    <i class="fas fa-check-circle" style="color: var(--gold); font-size: 1.1rem; flex-shrink: 0;"></i> Fluxo multimoedas
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--cream); font-size: 0.95rem;">
+                    <i class="fas fa-check-circle" style="color: var(--gold); font-size: 1.1rem; flex-shrink: 0;"></i> Checklist inteligente
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--cream); font-size: 0.95rem;">
+                    <i class="fas fa-check-circle" style="color: var(--gold); font-size: 1.1rem; flex-shrink: 0;"></i> Versão desktop + mobile
+                </div>
+            </div>
+
+            <!-- CTA principal -->
+            <a href="https://pay.hotmart.com/C106401358W" target="_blank" class="btn-gold" style="font-size: 1rem; padding: 22px 55px;">
+                <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i> Adquirir o Valise Premium →
+            </a>
+
+            <p style="margin-top: 28px; font-size: 0.85rem; color: rgba(250,248,243,0.45); letter-spacing: 0.5px;">
+                Compra segura e processada pela Hotmart · Pagamento em até 12x
+            </p>
+        </div>
+
+        <!-- Selos de confiança -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 35px; margin-top: 50px;">
+            <div style="display: flex; align-items: center; gap: 10px; color: #777; font-size: 0.9rem;">
+                <i class="fas fa-lock" style="color: var(--green-mid); font-size: 1.2rem;"></i> Pagamento Seguro
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; color: #777; font-size: 0.9rem;">
+                <i class="fas fa-undo" style="color: var(--green-mid); font-size: 1.2rem;"></i> Garantia de 7 dias
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; color: #777; font-size: 0.9rem;">
+                <i class="fas fa-headset" style="color: var(--green-mid); font-size: 1.2rem;"></i> Suporte via WhatsApp
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<footer style="background-color: var(--green-deep); color: var(--cream); padding: 25px 20px; text-align: center; font-size: 0.9rem; letter-spacing: 0.5px; font-family: 'DM Sans', sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto; opacity: 0.9;">
+        <strong>@2026Valise</strong> <span style="margin: 0 10px; color: var(--gold-light);">|</span> CNPJ: 36.369.107/0001-59
+    </div>
+</footer>
+
+<div id="login-overlay">
+    <div class="login-box">
+        <img src="assets/Logo T01.png?v=new" alt="Valise Logo" class="login-logo">
+        <h3 id="auth-title" style="font-family:'Cormorant Garamond', serif; font-size:1.8rem; margin: 10px 0 20px 0; color:var(--green-deep);">Realizar meu Sonho</h3>
+        
+        <input type="email" id="username" placeholder="E-mail">
+        <input type="password" id="password" placeholder="Senha">
+        
+        <button class="btn-access" onclick="handleAuth()">Entrar no Concierge</button>
+        
+        <p style="margin-top: 25px; font-size: 0.9rem; color: #555;">
+            <span id="auth-switch-text">Esqueceu suas credenciais?</span> 
+            <a href="javascript:void(0)" onclick="toggleAuthMode()" id="auth-switch-link" style="color: var(--gold); font-weight: bold; text-decoration: none; margin-left: 5px;">Recuperar Senha</a>
+        </p>
+
+        <p id="error" style="color:#d9534f; display:none; margin-top:15px; font-size:0.85rem; font-weight:bold;">Credenciais não reconhecidas.</p>
+        <p id="success-msg" style="color:#2d5a3d; display:none; margin-top:15px; font-size:0.85rem; font-weight:bold;">E-mail de redefinição enviado com sucesso!</p>
+        
+        <button onclick="hideLogin()" style="background:none; border:none; color:#bbb; cursor:pointer; margin-top:20px; font-size:0.85rem; text-decoration: underline;">Voltar ao início</button>
+    </div>
+</div>
+
+<div id="app-container">
+    <iframe id="app-frame"></iframe>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    // CONFIGURAÇÃO DO SEU PROJETO FIREBASE (Suas chaves reais originais preservadas)
+    const firebaseConfig = {
+        apiKey: "AIzaSyALCBUJ-9nKAz19LNVWe4qWbZNcBHq7cqU",
+        authDomain: "valise-concierge.firebaseapp.com",
+        projectId: "valise-concierge",
+        storageBucket: "valise-concierge.firebasestorage.app",
+        messagingSenderId: "312930931756",
+        appId: "1:312930931756:web:f8cf24760d1343dd4f2d89"
+    };
+
+    // Inicializa o Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let authMode = 'login'; // 'login' ou 'reset'
+
+    // Traduz códigos de erro do Firebase para mensagens amigáveis
+    function mensagemErroFirebase(code) {
+        const mapa = {
+            'auth/invalid-email': 'E-mail inválido. Verifique e tente novamente.',
+            'auth/user-disabled': 'Esta conta foi desativada. Contate o suporte.',
+            'auth/user-not-found': 'E-mail ou senha incorretos.',
+            'auth/wrong-password': 'E-mail ou senha incorretos.',
+            'auth/invalid-credential': 'E-mail ou senha incorretos.',
+            'auth/too-many-requests': 'Muitas tentativas. Aguarde um momento e tente novamente.',
+            'auth/network-request-failed': 'Falha de conexão. Verifique sua internet.',
+            'auth/missing-email': 'Informe o e-mail para continuar.'
+        };
+        return mapa[code] || 'Não foi possível concluir a operação. Tente novamente.';
+    }
+
+    window.showLogin = function() { 
+        document.getElementById('login-overlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    window.hideLogin = function() { 
+        document.getElementById('login-overlay').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Altera a interface entre modo Login e modo Recuperação de Senha
+    window.toggleAuthMode = function() {
+        const title = document.getElementById('auth-title');
+        const btn = document.querySelector('.btn-access');
+        const passwordInput = document.getElementById('password');
+        const switchText = document.getElementById('auth-switch-text');
+        const switchLink = document.getElementById('auth-switch-link');
+        const errorEl = document.getElementById('error');
+        const successEl = document.getElementById('success-msg');
+        
+        if (errorEl) errorEl.style.display = 'none';
+        if (successEl) successEl.style.display = 'none';
+
+        if (authMode === 'login') {
+            authMode = 'reset';
+            if (title) title.textContent = 'Recuperar Senha';
+            if (btn) btn.textContent = 'ENVIAR LINK DE REDEFINIÇÃO';
+            if (passwordInput) passwordInput.style.display = 'none'; // Esconde o campo de senha
+            if (switchText) switchText.textContent = 'Lembrou a senha?';
+            if (switchLink) switchLink.textContent = 'Voltar para o Login';
+        } else {
+            authMode = 'login';
+            if (title) title.textContent = 'Realizar meu Sonho';
+            if (btn) btn.textContent = 'ENTRAR NO CONCIERGE';
+            if (passwordInput) passwordInput.style.display = 'block'; // Mostra o campo de senha novamente
+            if (switchText) switchText.textContent = 'Esqueceu suas credenciais?';
+            if (switchLink) switchLink.textContent = 'Recuperar Senha';
+        }
+    }
+
+    window.handleAuth = function() {
+        const email = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        const btn = document.querySelector('.btn-access');
+        const errorEl = document.getElementById('error');
+        const successEl = document.getElementById('success-msg');
+
+        if (errorEl) errorEl.style.display = 'none';
+        if (successEl) successEl.style.display = 'none';
+
+        // Validação básica de campos vazios baseada no modo atual
+        if (!email || (authMode === 'login' && !p)) {
+            if (errorEl) {
+                errorEl.textContent = "Por favor, preencha os campos necessários.";
+                errorEl.style.display = 'block';
+            }
+            return;
+        }
+
+        const originalBtnText = btn.textContent;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSANDO...';
+
+        if (authMode === 'login') {
+            signInWithEmailAndPassword(auth, email, p)
+                .then((userCredential) => {
+                    sucessoLogin();
+                })
+                .catch((error) => {
+                    btn.textContent = originalBtnText;
+                    if (errorEl) {
+                        errorEl.textContent = mensagemErroFirebase(error.code);
+                        errorEl.style.display = 'block';
+                    }
+                });
+        } else {
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    btn.textContent = originalBtnText;
+                    if (successEl) {
+                        successEl.style.display = 'block';
+                    }
+                })
+                .catch((error) => {
+                    btn.textContent = originalBtnText;
+                    if (errorEl) {
+                        errorEl.textContent = mensagemErroFirebase(error.code);
+                        errorEl.style.display = 'block';
+                    }
+                });
+        }
+    }
+
+    // FUNÇÃO REESCRITA SEM ALTERAR VARIÁVEIS OU SELETORES DO LANDING ORIGINAL
+ function sucessoLogin() {
+    setTimeout(() => {
+        // Detecção por largura de tela — mais confiável que UserAgent em tablets
+        const isMobile = window.innerWidth < 768;
+        
+        if (isMobile) {
+            window.location.href = 'versao-mobile-turista/index.html';
+        } else {
+            window.location.href = 'versao-desktop-turista/index.html';
+        }
+    }, 500);
+}
+</script>
+
+</body>
+</html>
