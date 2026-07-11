@@ -189,7 +189,7 @@ let events = JSON.parse(safeStorage.getItem('tp_v17')) || [];
             btn_clear_data: 'Limpar Dados',
             confirm_clear_data: 'Isso apagará TODOS os dados (eventos, checklist, viagens, cartões e orçamentos). Esta ação não pode ser desfeita. Deseja continuar?',
             // Aviso de backup / exportação
-            export_reminder_never: 'Salve seus arquivos sempre com o mesmo nome do Título da viagem',
+            export_reminder_never: 'Salve seus arquivos sempre com o mesmo nome do Título da viagem.',
             export_reminder_old: 'Já faz um tempo desde o seu último backup.',
             export_reminder_ios_extra: 'No iPhone/iPad, o navegador pode apagar os dados salvos automaticamente após alguns dias sem uso — exporte um backup para não correr risco de perdê-los.',
             export_reminder_extra: 'Recomendamos exportar um backup regularmente para não correr risco de perder seus dados.',
